@@ -23,7 +23,7 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    // ホーム画面表示
+    // ホーム画面表示(home)
     public function index()
     {
         // 全メモを取得
@@ -63,7 +63,7 @@ class HomeController extends Controller
         return redirect()->route('home');
     }
 
-    // メモ編集
+    // メモ編集画面表示
     public function edit($id)
     {
         $user = Auth::user();
@@ -72,6 +72,19 @@ class HomeController extends Controller
         // dd($memo);
         // 全メモを取得
         $memos = Memo::where('user_id',$user['id'])->where('deleted_at',null)->orderBy('updated_at','DESC')->get();
+        // 編集画面表示
         return view('edit',compact('memo','user','memos'));
+    }
+
+    // メモ編集実行
+    public function update(Request $request, $id)
+    {
+        // 変更メモ内容を取得
+        $input_memo = $request->all();
+        // dd($input_memo);
+        //データ更新
+        Memo::where('id',$id)->update(['content' => $input_memo['content']]);
+        // リダイレクト処理
+        return redirect()->route('home');
     }
 }
