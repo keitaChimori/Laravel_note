@@ -20,3 +20,5 @@ Route::get('/create', [HomeController::class, 'create'])->name('create');
 Route::post('/store', [HomeController::class, 'store'])->name('store');
 // メモ編集表示
 Route::get('/edit/{id}', [HomeController::class, 'edit'])->name('edit');
+// メモ編集実行
+Route::post('/update/{id}', [HomeController::class, 'update'])->name('update');
