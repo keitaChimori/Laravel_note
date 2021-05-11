@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Memo;
+use App\Models\Tag;
 
 class HomeController extends Controller
 {
@@ -26,22 +27,13 @@ class HomeController extends Controller
     // ホーム画面表示(home)
     public function index()
     {
-        // 全メモを取得
-        $user = Auth::user();
-        $memos = Memo::where('user_id',$user['id'])->where('deleted_at',null)->orderBy('updated_at','DESC')->get();
-        // dd($memos);
-        return view('home',compact('memos','user'));
+        return view('create');
     }
 
     // メモ新規登録画面表示
     public function create()
-    {
-        // ログイン中のユーザー情報を取得
-        $user = Auth::user();
-        // dd($user); 
-        // 全メモを取得
-        $memos = Memo::where('user_id',$user['id'])->where('deleted_at',null)->orderBy('updated_at','DESC')->get();
-        return view('create',compact('user','memos'));
+    { 
+        return view('create');
     }
 
     // メモ新規登録実行
@@ -49,13 +41,24 @@ class HomeController extends Controller
     {
         $memodata = $request->all();
         // dd($memodata);
-        // POSTされたデータをDB（memosテーブル）に挿入
-        // MEMOモデルにDBへ保存する命令を出す
-
-
+        // tagの重複確認
+        $exist_tag = Tag::where('name',$memodata['tag'])->where('user_id',$memodata['user_id'])->first();
+        // dd($exist_tag);  
+        if(empty($exist_tag['id'])){
+            // タグ重複なし
+            // 先にtagテーブルに挿入
+            $tag_id = Tag::insertGetId(['name' => $memodata['tag'], 'user_id' => $memodata['user_id']]);
+            // dd($tag_id);
+        }else{
+            // タグ重複あり
+            $tag_id = $exist_tag['id'];
+        }
+        
+        // memosテーブルに挿入
         $memo_id = Memo::insertGetId([
             'content' => $memodata['content'],
             'user_id' => $memodata['user_id'],
+            'tag_id' => $tag_id,
             'status' => "1",
         ]);
         
@@ -70,10 +73,8 @@ class HomeController extends Controller
         // 編集するメモデータを取得
         $memo = Memo::where('deleted_at',null)->where('user_id',$user['id'])->where('id',$id)->first();
         // dd($memo);
-        // 全メモを取得
-        $memos = Memo::where('user_id',$user['id'])->where('deleted_at',null)->orderBy('updated_at','DESC')->get();
         // 編集画面表示
-        return view('edit',compact('memo','user','memos'));
+        return view('edit',compact('memo'));
     }
 
     // メモ編集実行
@@ -83,8 +84,19 @@ class HomeController extends Controller
         $input_memo = $request->all();
         // dd($input_memo);
         //データ更新
-        Memo::where('id',$id)->update(['content' => $input_memo['content']]);
+        Memo::where('id',$id)->update(['content' => $input_memo['content'],'tag_id' => $input_memo['tag_id']]);
         // リダイレクト処理
         return redirect()->route('home');
+    }
+
+    // メモ削除
+    public function delete(Request $request, $id)
+    {
+        // 変更メモ内容を取得
+        $input_memo = $request->all();
+        //メモ論理削除
+        Memo::find($id)->delete();
+        // リダイレクト処理
+        return redirect()->route('home')->with('success','メモを削除しました！');
     }
 }

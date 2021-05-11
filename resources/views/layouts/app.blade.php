@@ -16,6 +16,7 @@
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    <!-- Fontawesome -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
 
@@ -78,19 +79,23 @@
         </nav>
 
         <main class="main container">
+            <!-- フラッシュメッセージ -->
             @if(session('success'))
-            <div class="alert alert-success" role="alert">
-                {{ session('success') }}
-            </div>
+                <div class="alert alert-success mt-3" role="alert">
+                    {{ session('success') }}
+                </div>
             @endif
             <div class="row" style='height: 92vh;'>
                 <div class="col-md-2 p-0">
                     <div class="card h-100">
                         <div class="card-header">タグ一覧</div>
                         <div class="card-body py-2 px-4">
-                            <a class='d-block' href='/'>全て表示</a>
-
-
+                            <a class='d-block mb-3' href='/'>全て表示</a>
+                            @if(!empty($tags))
+                                @foreach($tags as $tag)
+                                    <a href="/?tag={{ $tag['name'] }}"><p>{{ $tag['name'] }}</p></a>
+                                @endforeach
+                            @endif
                         </div>
                     </div>
 
