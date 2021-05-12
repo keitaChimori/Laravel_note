@@ -9,6 +9,7 @@ use App\Models\Tag;
 
 class HomeController extends Controller
 {
+    protected $redirectTo = '/';
     /**
      * Create a new controller instance.
      *
