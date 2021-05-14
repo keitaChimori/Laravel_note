@@ -24,6 +24,7 @@
     <link href="{{ '/css/app.css' }}" rel="stylesheet">
     <link href="{{ '/css/utility.css' }}" rel="stylesheet">
     @yield('css')
+
 </head>
 
 <body>
@@ -89,7 +90,7 @@
                 <div class="col-md-2 p-0">
                     <div class="card h-100">
                         <div class="card-header">タグ一覧</div>
-                        <div class="card-body py-2 px-4">
+                        <div class="card-body py-2 px-4 taglist">
                             <a class='d-block mb-3' href='/'>全て表示</a>
                             @if(!empty($tags))
                                 @foreach($tags as $tag)
@@ -102,11 +103,20 @@
                 </div>
                 <div class="col-md-4 p-0">
                     <div class="card h-100">
-                        <div class="card-header d-flex">メモ一覧 <a class='ml-auto' href='/create'><i class="fas fa-plus-circle"></i></a></div>
+                        <div class="card-header d-flex">メモ一覧
+                        <div class="ml-3 px-3 alert-info">
+                        タグ：
+                        @if(empty($tag_display))
+                            全て
+                        @else
+                            {{$tag_display}}
+                        @endif
+                        </div> 
+                        <a class='ml-auto' href='/create'><i class="fas fa-plus-circle"></i></a></div>
                         <div class="card-body p-2">
                             @if(!empty($memos))
                                 @foreach($memos as $memo)
-                                    <a href="/edit/{{ $memo['id'] }}"><p>{{ $memo['content'] }}</p></a>
+                                    <a href="/edit/{{ $memo['id'] }}"><p>{{ $memo['title'] }}</p></a>
                                 @endforeach
                             @endif
                         </div>
@@ -119,6 +129,7 @@
         </main>
     </div>
     @yield('footer')
+
 </body>
 
 </html>

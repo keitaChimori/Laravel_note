@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\MemoFormRequest;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Memo;
 use App\Models\Tag;
@@ -28,17 +29,23 @@ class HomeController extends Controller
     // ホーム画面表示(home)
     public function index()
     {
-        return view('create');
+        // メモ一覧（タグ指定絞り込み）取得
+        $memoModel = new Memo();
+        $memos = $memoModel->myMemo(Auth::id());
+        return view('create',compact('memos'));
     }
 
     // メモ新規登録画面表示
     public function create()
     { 
-        return view('create');
+        // メモ一覧（タグ指定絞り込み）取得
+        $memoModel = new Memo();
+        $memos = $memoModel->myMemo(Auth::id());
+        return view('create',compact('memos'));
     }
 
     // メモ新規登録実行
-    public function store(Request $request)
+    public function store(MemoFormRequest $request)
     {
         $memodata = $request->all();
         // dd($memodata);
@@ -56,38 +63,45 @@ class HomeController extends Controller
         }
         
         // memosテーブルに挿入
-        $memo_id = Memo::insertGetId([
+        Memo::insert([
+            'title' => $memodata['title'],
             'content' => $memodata['content'],
             'user_id' => $memodata['user_id'],
             'tag_id' => $tag_id,
-            'status' => "1",
         ]);
-        
         // リダイレクト処理
-        return redirect()->route('home');
+        return redirect()->route('home')->with('success','新規メモを作成しました！');
     }
 
     // メモ編集画面表示
     public function edit($id)
     {
         $user = Auth::user();
+        // メモ一覧（タグ指定絞り込み）取得
+        $memoModel = new Memo();
+        $memos = $memoModel->selectMemo(Auth::id(),$id);
+        
         // 編集するメモデータを取得
         $memo = Memo::where('deleted_at',null)->where('user_id',$user['id'])->where('id',$id)->first();
         // dd($memo);
         // 編集画面表示
-        return view('edit',compact('memo'));
+        return view('edit',compact('memos','memo'));
     }
 
     // メモ編集実行
-    public function update(Request $request, $id)
+    public function update(MemoFormRequest $request, $id)
     {
         // 変更メモ内容を取得
         $input_memo = $request->all();
         // dd($input_memo);
         //データ更新
-        Memo::where('id',$id)->update(['content' => $input_memo['content'],'tag_id' => $input_memo['tag_id']]);
+        Memo::where('id',$id)->update([
+            'title' => $input_memo['title'],
+            'content' => $input_memo['content'],
+            'tag_id' => $input_memo['tag_id'],
+        ]);
         // リダイレクト処理
-        return redirect()->route('home');
+        return redirect()->route('home')->with('success','メモを編集しました！');
     }
 
     // メモ削除
