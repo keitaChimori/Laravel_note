@@ -16,6 +16,21 @@
                 <!-- メモ入力 -->
                 <input type='hidden' name='user_id' value="{{ $user['id'] }}">
                 <div class="form-group">
+                    <label for="title">タイトル</label>
+                    @if($errors->has('title'))
+                        <div class="text-danger">
+                        {{ $errors->first('title') }}
+                        </div>
+                    @endif
+                    <input type="text" name='title' class="form-control" id="title" value="{{ $memo['title'] }}">
+                </div>
+                <!-- メモ本文(content) -->
+                <div class="form-group">
+                    @if($errors->has('content'))
+                        <div class="text-danger">
+                        {{ $errors->first('content') }}
+                        </div>
+                    @endif
                      <textarea name='content' class="form-control" rows="10">{{ $memo['content'] }}</textarea>
                 </div>
                 <!-- タグ選択 -->
@@ -27,7 +42,7 @@
                         @endforeach
                     </select>
                 </div>
-                <button type='submit' class="btn btn-primary btn-lg">更新</button>
+                <button type='submit' class="btn btn-primary btn-lg  w-25">更新</button>
             </form>
         </div>
     </div>

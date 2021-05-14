@@ -1,5 +1,5 @@
 @extends('layouts.auth')
-
+@section('title','新規登録｜MyNote')
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
