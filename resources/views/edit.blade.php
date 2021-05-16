@@ -13,8 +13,9 @@
         <div class="card-body">
             <form method='POST' action="{{ route('update' , ['id' => $memo['id']] ) }}">
                 @csrf
-                <!-- メモ入力 -->
+                <!-- 以下メモ入力 -->
                 <input type='hidden' name='user_id' value="{{ $user['id'] }}">
+                <!-- タイトル -->
                 <div class="form-group">
                     <label for="title">タイトル</label>
                     @if($errors->has('title'))
